@@ -1,0 +1,342 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Provisions HIPAA Ready Environment in AWS (qs-1qtukbnsl)
+Metadata:
+  QuickStartDocumentation:
+    EntrypointName: "Parameters for deploying HIPAA Reference Architecture"
+  LintSpellExclude:
+    - CloudWatch
+    - CloudTrail
+    - No
+    - Config
+  cfn-lint: { config: { ignore_checks: [ W9006 ] } }
+  Identifier:
+    Value: main
+  Input:
+    Description: Input of all required parameters in nested stacks
+  Output:
+    Description: N/A
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: AWS Config configuration
+      Parameters:
+      - AWSConfigARN
+      - CreateConfigRecorder
+      - CreateConfigDeliveryChannel
+    - Label:
+        default: AWS logging configuration
+      Parameters:
+      - SNSAlarmEmail
+      - LifecycleExpirationDays
+      - LifecycleTransitionStandardIADays
+      - LifecycleTransitionGlacierDays
+      - CloudTrailLogRetentionDays
+    - Label:
+        default: Production VPC configuration
+      Parameters:
+      - ProdVPCCIDRBlock
+      - ProdVPCSubnet1
+      - ProdVPCSubnet2
+      - ProdVPCFlowLogLogGroupRetention
+    - Label:
+        default: Management VPC configuration
+      Parameters:
+      - MgmtVPCCIDRBlock
+      - MgmtVPCPublicSubnet1
+      - MgmtVPCPublicSubnet2
+      - MgmtVPCPrivateSubnet1
+      - MgmtVPCPrivateSubnet2
+      - MgmtVPCFlowLogLogGroupRetention
+    - Label:
+        default: AWS Quick Start configuration
+      Parameters:
+      - QSS3BucketName
+      - QSS3BucketRegion
+      - QSS3KeyPrefix
+    ParameterLabels:
+      AWSConfigARN:
+        default: AWS Config service-linked-role ARN
+      CreateConfigRecorder:
+        default: AWS Config recorder
+      CreateConfigDeliveryChannel:
+        default: AWS Config delivery channel
+      SNSAlarmEmail:
+        default: SNS alarm-notification email address
+      LifecycleExpirationDays:
+        default: S3 Lifecycle expiration days
+      LifecycleTransitionStandardIADays:
+        default: S3 Lifecycle transition-to-standard-IA days
+      LifecycleTransitionGlacierDays:
+        default: S3 Lifecycle transition-to-S3-Glacier days
+      CloudTrailLogRetentionDays:
+        default: CloudTrail log-retention days
+      ProdVPCCIDRBlock:
+        default: Production VPC CIDR block
+      ProdVPCSubnet1:
+        default: Production subnet 1 CIDR block
+      ProdVPCSubnet2:
+        default: Production subnet 2 CIDR block
+      ProdVPCFlowLogLogGroupRetention:
+        default: Production VPC flow-log log-group retention
+      MgmtVPCCIDRBlock:
+        default: Management VPC CIDR block
+      MgmtVPCPublicSubnet1:
+        default: Management public subnet 1 CIDR block
+      MgmtVPCPublicSubnet2:
+        default: Management public subnet 2 CIDR block
+      MgmtVPCPrivateSubnet1:
+        default: Management private subnet 1 CIDR block
+      MgmtVPCPrivateSubnet2:
+        default: Management private subnet 2 CIDR block
+      MgmtVPCFlowLogLogGroupRetention:
+        default: Management VPC flow-log log-group retention
+      QSS3BucketName:
+        default: Quick Start S3 bucket name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket Region
+      QSS3KeyPrefix:
+        default: Quick Start S3 key prefix
+Parameters:
+  AWSConfigARN:
+    Type: String
+    Default: ''
+    Description: Amazon Resource Name for the AWS Config service-linked role.
+  LifecycleExpirationDays:
+    Type: Number
+    Default: 2555
+    Description: Number of days after objects are created that Amazon S3 automatically deletes them.
+  LifecycleTransitionStandardIADays:
+    Type: Number
+    Default: 90
+    Description: Number of days after objects are created that Amazon S3 automatically transitions them to the S3 Standard-IA storage class.
+  LifecycleTransitionGlacierDays:
+    Type: Number
+    Default: 180
+    Description: Number of days after objects are created that Amazon S3 automatically transitions them to the S3 Glacier storage class.
+  SNSAlarmEmail:
+    Type: String
+    Default: ''
+    Description: Amazon SNS notification email address for CloudWatch alarms.
+  CloudTrailLogRetentionDays:
+    Type: Number
+    Default: 90
+    Description: Number of days that CloudTrail logs are retained.
+  ProdVPCCIDRBlock:
+    Type: String
+    Default: 172.17.0.0/16
+    Description: CIDR block for the production VPC.
+  ProdVPCSubnet1:
+    Type: String
+    Default: 172.17.11.0/24
+    Description: CIDR block for subnet 1 in the production VPC.
+  ProdVPCSubnet2:
+    Type: String
+    Default: 172.17.12.0/24
+    Description: CIDR block for subnet 2 in the production VPC.
+  ProdVPCFlowLogLogGroupRetention:
+    Type: Number
+    Default: 90
+    Description: Number of days that the flow-log log group is retained for the production VPC.
+  MgmtVPCCIDRBlock:
+    Type: String
+    Default: 172.16.0.0/16
+    Description: CIDR block for the management VPC.
+  MgmtVPCPublicSubnet1:
+    Type: String
+    Default: 172.16.1.0/24
+    Description: CIDR block for public subnet 1 in the management VPC.
+  MgmtVPCPublicSubnet2:
+    Type: String
+    Default: 172.16.2.0/24
+    Description: CIDR block for public subnet 2 in the management VPC.
+  MgmtVPCPrivateSubnet1:
+    Type: String
+    Default: 172.16.11.0/24
+    Description: CIDR block for private subnet 1 in the management VPC.
+  MgmtVPCPrivateSubnet2:
+    Type: String
+    Default: 172.16.12.0/24
+    Description: CIDR block for private subnet 2 in the management VPC.
+  MgmtVPCFlowLogLogGroupRetention:
+    Type: Number
+    Default: 90
+    Description: Number of days that the flow-log log group is retained for the management VPC.
+  CreateConfigRecorder:
+    Type: String
+    Default: 'Yes'
+    AllowedValues: [ 'Yes', 'No', 'AutoDetect' ]
+    Description: Choose "No" if you've already used AWS Config in this Region.
+  CreateConfigDeliveryChannel:
+    Type: String
+    Default: 'Yes'
+    AllowedValues: [ 'Yes', 'No', 'AutoDetect' ]
+    Description: Choose "No" if you've already used AWS Config in this Region.
+  QSS3BucketName:
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-.]*[0-9a-zA-Z])*$
+    ConstraintDescription: The Quick Start bucket name can include numbers, lowercase
+      letters, uppercase letters, and hyphens (-). It cannot start or end with a 
+      hyphen (-).
+    Default: aws-quickstart
+    Description: Name of the S3 bucket for your copy of the Quick Start assets. 
+      Keep the default name unless you are customizing the template. 
+      Changing the name updates code references to point to a new Quick 
+      Start location. This name can include numbers, lowercase letters, 
+      uppercase letters, and hyphens, but do not start or end with a hyphen (-). 
+      See https://aws-quickstart.github.io/option1.html.
+    Type: String
+  QSS3BucketRegion:
+    Default: us-east-1
+    Description: 'AWS Region where the Quick Start S3 bucket (QSS3BucketName) is 
+    hosted. Keep the default Region unless you are customizing the template. 
+    Changing this Region updates code references to point to a new Quick Start location. 
+    When using your own bucket, specify the Region. 
+    See https://aws-quickstart.github.io/option1.html.'
+    Type: String
+  QSS3KeyPrefix:
+    AllowedPattern: ^[0-9a-zA-Z-/]*$
+    ConstraintDescription: The Quick Start S3 key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), and forward slashes (/). The prefix should
+      end with a forward slash (/).
+    Default: quickstart-compliance-hipaa/
+    Description: S3 key prefix that is used to simulate a directory for your copy of the 
+      Quick Start assets. Keep the default prefix unless you are customizing 
+      the template. Changing this prefix updates code references to point to 
+      a new Quick Start location. This prefix can include numbers, lowercase 
+      letters, uppercase letters, hyphens (-), and forward slashes (/). End with 
+      a forward slash. See https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html 
+      and https://aws-quickstart.github.io/option1.html.
+    Type: String
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+Resources:
+  ConfigStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: 
+        !Sub 
+          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/compliance-hipaa-config.template.yaml'
+          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+            QSS3KeyPrefix: !Ref QSS3KeyPrefix
+      TimeoutInMinutes: 60
+      Parameters:
+        AWSConfigARN: !Ref AWSConfigARN
+        CreateConfigRecorder: !Ref CreateConfigRecorder
+        CreateConfigDeliveryChannel: !Ref CreateConfigDeliveryChannel
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+  LogStack:
+    Type: 'AWS::CloudFormation::Stack'
+    DependsOn: ConfigStack
+    Properties:
+      TemplateURL: 
+        !Sub 
+          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/compliance-hipaa-logging.template.yaml'
+          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+            QSS3KeyPrefix: !Ref QSS3KeyPrefix
+      TimeoutInMinutes: 60
+      Parameters:
+        SNSAlarmEmail: !Ref SNSAlarmEmail
+        LifecycleExpirationDays: !Ref LifecycleExpirationDays
+        LifecycleTransitionStandardIADays: !Ref LifecycleTransitionStandardIADays
+        LifecycleTransitionGlacierDays: !Ref LifecycleTransitionGlacierDays
+        CloudTrailLogRetentionDays: !Ref CloudTrailLogRetentionDays
+  ProdStack:
+    Type: 'AWS::CloudFormation::Stack'
+    DependsOn: [ ConfigStack, LogStack, MgmtStack ]
+    Properties:
+      TemplateURL: 
+        !Sub 
+          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/compliance-hipaa-prod.template.yaml'
+          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+            QSS3KeyPrefix: !Ref QSS3KeyPrefix
+      TimeoutInMinutes: 60
+      Parameters:
+        ProdVPCCIDRBlock: !Ref ProdVPCCIDRBlock
+        ProdVPCSubnet1: !Ref ProdVPCSubnet1
+        ProdVPCSubnet2: !Ref ProdVPCSubnet2
+        ProdVPCFlowLogLogGroupRetention: !Ref ProdVPCFlowLogLogGroupRetention
+  MgmtStack:
+    Type: 'AWS::CloudFormation::Stack'
+    DependsOn: [ ConfigStack, LogStack ]
+    Properties:
+      TemplateURL: 
+        !Sub 
+          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/compliance-hipaa-management.template.yaml'
+          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+            QSS3KeyPrefix: !Ref QSS3KeyPrefix
+      TimeoutInMinutes: 60
+      Parameters:
+        MgmtVPCCIDRBlock: !Ref MgmtVPCCIDRBlock
+        MgmtVPCPublicSubnet1: !Ref MgmtVPCPublicSubnet1
+        MgmtVPCPublicSubnet2: !Ref MgmtVPCPublicSubnet2
+        MgmtVPCPrivateSubnet1: !Ref MgmtVPCPrivateSubnet1
+        MgmtVPCPrivateSubnet2: !Ref MgmtVPCPrivateSubnet2
+        MgmtVPCFlowLogLogGroupRetention: !Ref MgmtVPCFlowLogLogGroupRetention
+  TgwStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: 
+        !Sub 
+          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/compliance-hipaa-transit-gateway.template.yaml'
+          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+            QSS3KeyPrefix: !Ref QSS3KeyPrefix
+      TimeoutInMinutes: 60
+      Parameters:
+        ProdVPCCIDRBlock: !Ref ProdVPCCIDRBlock
+        ProductionVPC:
+          Fn::GetAtt: 
+          - ProdStack
+          - Outputs.ProductionVPC
+        ProductionCoreSubnet1:
+          Fn::GetAtt: 
+          - ProdStack
+          - Outputs.ProductionCoreSubnet1
+        ProductionCoreSubnet2:
+          Fn::GetAtt: 
+          - ProdStack
+          - Outputs.ProductionCoreSubnet2
+        ProductionPrivateRouteTable1:
+          Fn::GetAtt: 
+          - ProdStack
+          - Outputs.ProductionPrivateRouteTable1
+        ManagementVPC:
+          Fn::GetAtt: 
+          - MgmtStack
+          - Outputs.ManagementVPC
+        ManagementCoreSubnet1:
+          Fn::GetAtt: 
+          - MgmtStack
+          - Outputs.ManagementCoreSubnet1
+        ManagementCoreSubnet2:
+          Fn::GetAtt: 
+          - MgmtStack
+          - Outputs.ManagementCoreSubnet2
+        ManagementPrivateRouteTable1:
+          Fn::GetAtt: 
+          - MgmtStack
+          - Outputs.ManagementPrivateRouteTable1
+        ManagementPrivateRouteTable2:
+          Fn::GetAtt: 
+          - MgmtStack
+          - Outputs.ManagementPrivateRouteTable2
+        ManagementPublicRouteTable1:
+          Fn::GetAtt: 
+          - MgmtStack
+          - Outputs.ManagementPublicRouteTable1
+        ManagementPublicRouteTable2:
+          Fn::GetAtt: 
+          - MgmtStack
+          - Outputs.ManagementPublicRouteTable2
+Outputs:
+  TemplateType:
+    Value: HIPAA Compliance
+  TemplateVersion:
+    Value: 1.0
+  Help:
+    Description: For assistance or questions regarding this quickstart please email compliance-accelerator@amazon.com
+    Value: ''

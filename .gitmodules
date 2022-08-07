@@ -1,0 +1,8 @@
+[submodule "docs/boilerplate"]
+	path = docs/boilerplate
+	url = https://github.com/aws-quickstart/quickstart-documentation-base-common.git
+	branch = main
+[submodule "submodules/aws-config-rules"]
+	path = submodules/aws-config-rules
+	url = https://github.com/awslabs/aws-config-rules.git
+	branch = master

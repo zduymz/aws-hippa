@@ -1,0 +1,44 @@
+project:
+  name: quickstart-compliance-hipaa
+  owner: quickstart-eng@amazon.com
+  shorten_stack_name: true
+  package_lambda: false
+  regions:
+    - us-east-1
+  parameters:
+    AWSConfigARN: overridden
+    SNSAlarmEmail: overridden
+    CreateConfigRecorder: 'Yes'
+    CreateConfigDeliveryChannel: 'Yes'
+    DevVPCFlowLogLogGroup: dev-flow-logs-group
+    ProdVPCFlowLogLogGroup: prod-flow-logs-group
+    MgmtVPCFlowLogLogGroup: mgmt-flow-logs-group
+    QSS3BucketName: $[taskcat_autobucket]
+    QSS3BucketRegion: $[taskcat_current_region]
+    QSS3KeyPrefix: quickstart-compliance-hipaa/
+tests:
+  comp-hipaa-regional-test:
+    regions:
+    - us-east-1
+    - us-east-2
+    - us-west-1
+    - us-west-2
+    - ca-central-1
+    - ap-south-1
+    - ap-northeast-1
+    - ap-northeast-2
+    - ap-southeast-1
+    - ap-southeast-2
+    - eu-central-1
+    - eu-west-1
+    - eu-west-2
+    - eu-west-3
+    # Invalid or unsupported Type AWS::EC2::TransitGatewayRoute for
+    # resource TransitGatewayExternalRoute1 in eu-north-1
+    #- eu-north-1
+    - sa-east-1
+    template: templates/compliance-hipaa-entrypoint.template.yaml
+#  gov-cloud-test:
+#    template: templates/compliance-hipaa-entrypoint.template.yaml
+#    regions:
+#    - us-gov-west-1
