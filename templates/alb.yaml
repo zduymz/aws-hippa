@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ""
+Parameters:
+  VpcModule:
+    Description: "Stack name of vpc module."
+    Type: String
+  Prefix:
+    Description: "Stack name of vpc module."
+    Type: String
+  CertificateArn:
+    Description: 'Optional Amazon Resource Name (ARN) of the certificate to associate with the listener.'
+    Type: String
+    Default: ''
+  IdleTimeoutInSeconds:
+    Description: "The idle timeout value, in seconds."
+    Type: Number
+    Default: 60
+    MinValue: 1
+    MaxValue: 4000
+Conditions:
+  HasCertificateArn: !Not [!Equals [!Ref CertificateArn, '']]
+Resources:
+  SecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupName: !Sub "${Prefix}-spd-ehs-elb-sg"
+      GroupDescription: Enable SSH access via port 22
+      GroupDescription: !Ref "AWS::StackName"
+      VpcId: { "Fn::ImportValue": !Sub "${VpcModule}-Id" }
+  SecurityGroupIngressHTTP:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    Properties:
+      GroupId: !Ref SecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: '0.0.0.0/0'
+  SecurityGroupIngressHTTPS:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    Properties:
+      GroupId: !Ref SecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: '0.0.0.0/0'
+  TargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      Name: !Sub "${Prefix}-spd-ehs-web"
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: TCP
+      HealthCheckTimeoutSeconds: 10 
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      Port: 443
+      Protocol: HTTPS
+      TargetType: ip
+      VpcId: {'Fn::ImportValue': !Sub '${VpcModule}-Id'}
+  Listener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      Certificates: !If [HasCertificateArn, [{CertificateArn: !Ref CertificateArn}], !Ref 'AWS::NoValue']
+      DefaultActions:
+      - TargetGroupArn: !Ref TargetGroup
+        Type: forward
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 443
+      Protocol: !If [HasCertificateArn, HTTPS, HTTP]
+  LoadBalancer:
+    Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
+    Properties:
+      Name: !Sub "${Prefix}-dev-hcs-web"
+      LoadBalancerAttributes:
+        - Key: "idle_timeout.timeout_seconds"
+          Value: !Ref IdleTimeoutInSeconds
+        - Key: "routing.http2.enabled"
+          Value: "true"
+        - Key: "access_logs.s3.enabled"
+          Value: "false"
+      Scheme: "internet-facing"
+      SecurityGroups:
+        - !Ref SecurityGroup
+      Subnets:
+        - { "Fn::ImportValue": !Sub "${VpcModule}-CoreSubnet1" }
+        - { "Fn::ImportValue": !Sub "${VpcModule}-CoreSubnet2" }
+      Type: application
+Outputs:
+  Arn:
+    Value: !Ref LoadBalancer
+    Export:
+      Name: !Sub "${AWS::StackName}-Arn"
+  CanonicalHostedZoneId:
+    Value: !GetAtt LoadBalancer.CanonicalHostedZoneID
+    Export:
+      Name: !Sub "${AWS::StackName}-CanonicalHostedZoneId"
+  DnsName:
+    Value: !GetAtt "LoadBalancer.DNSName"
+    Export:
+      Name: !Sub "${AWS::StackName}-DnsName"
+  LoadBalancerFullName:
+    Value: !GetAtt "LoadBalancer.LoadBalancerFullName"
+    Export:
+      Name: !Sub "${AWS::StackName}-LoadBalancerFullName"
+  SecurityGroupId:
+    Value: !Ref SecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-SecurityGroupId"

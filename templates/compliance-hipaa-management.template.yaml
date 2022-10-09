@@ -307,10 +307,19 @@ Resources:
 Outputs:
   ManagementCoreSubnet1:
     Value: !Ref ManagementCoreSubnet1
+    Export:
+      Name:
+        'Fn::Sub': '${AWS::StackName}-CoreSubnet1'
   ManagementCoreSubnet2:
     Value: !Ref ManagementCoreSubnet2
+    Export:
+      Name:
+        'Fn::Sub': '${AWS::StackName}-CoreSubnet2'
   ManagementVPC:
     Value: !Ref ManagementVPC
+    Export:
+      Name:
+        'Fn::Sub': '${AWS::StackName}-Id'
   ManagementPrivateRouteTable1:
     Value: !Ref ManagementPrivateRouteTable1
   ManagementPrivateRouteTable2:

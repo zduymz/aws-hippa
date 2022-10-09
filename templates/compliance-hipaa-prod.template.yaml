@@ -154,8 +154,14 @@ Resources:
 Outputs:
   ProductionCoreSubnet1:
     Value: !Ref ProductionCoreSubnet1
+    Export:
+      Name:
+        'Fn::Sub': '${AWS::StackName}-CoreSubnet1'
   ProductionCoreSubnet2:
     Value: !Ref ProductionCoreSubnet2
+    Export:
+      Name:
+        'Fn::Sub': '${AWS::StackName}-CoreSubnet2'
   ProductionVPC:
     Value: !Ref ProductionVPC
   ProductionPrivateRouteTable1:
