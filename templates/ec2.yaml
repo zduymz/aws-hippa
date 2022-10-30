@@ -51,6 +51,30 @@ Parameters:
   SftpAmiId:
     Type: String
 Resources:
+  ManagedInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ec2-bootstrap-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ssm.amazonaws.com
+            - ec2.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+      - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+      Path: "/"
+  ManagedInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+      - !Ref ManagedInstanceRole
+      InstanceProfileName: ec2-bootstrap-profile
   BastionInstance:
     Type: AWS::EC2::Instance
     Properties:
@@ -85,6 +109,7 @@ Resources:
       KeyName: !Ref "KeyName"
       ImageId: !Ref "WebAmiId"
       SubnetId: { "Fn::ImportValue": !Sub "${ProdVPC}-CoreSubnet1" }
+      IamInstanceProfile: !Ref ManagedInstanceProfile
       Tags:
         - Key: Name
           Value: !Sub "${Prefix}spdweb01"

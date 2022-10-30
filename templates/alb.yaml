@@ -32,8 +32,8 @@ Resources:
     Properties:
       GroupId: !Ref SecurityGroup
       IpProtocol: tcp
-      FromPort: 80
-      ToPort: 80
+      FromPort: 8443
+      ToPort: 8443
       CidrIp: '0.0.0.0/0'
   SecurityGroupIngressHTTPS:
     Type: 'AWS::EC2::SecurityGroupIngress'
@@ -43,7 +43,7 @@ Resources:
       FromPort: 443
       ToPort: 443
       CidrIp: '0.0.0.0/0'
-  TargetGroup:
+  TargetGroup1:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
       Name: !Sub "${Prefix}-spd-ehs-web"
@@ -56,15 +56,38 @@ Resources:
       Protocol: HTTPS
       TargetType: ip
       VpcId: {'Fn::ImportValue': !Sub '${VpcModule}-Id'}
-  Listener:
+  TargetGroup2:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      Name: !Sub "${Prefix}-spd-ehs-api"
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: TCP
+      HealthCheckTimeoutSeconds: 10 
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      Port: 8443
+      Protocol: HTTPS
+      TargetType: ip
+      VpcId: {'Fn::ImportValue': !Sub '${VpcModule}-Id'}
+  Listener1:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
     Properties:
       Certificates: !If [HasCertificateArn, [{CertificateArn: !Ref CertificateArn}], !Ref 'AWS::NoValue']
       DefaultActions:
-      - TargetGroupArn: !Ref TargetGroup
+      - TargetGroupArn: !Ref TargetGroup1
         Type: forward
       LoadBalancerArn: !Ref LoadBalancer
       Port: 443
+      Protocol: !If [HasCertificateArn, HTTPS, HTTP]
+  Listener2:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      Certificates: !If [HasCertificateArn, [{CertificateArn: !Ref CertificateArn}], !Ref 'AWS::NoValue']
+      DefaultActions:
+      - TargetGroupArn: !Ref TargetGroup2
+        Type: forward
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 8443
       Protocol: !If [HasCertificateArn, HTTPS, HTTP]
   LoadBalancer:
     Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
