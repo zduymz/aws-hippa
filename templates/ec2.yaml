@@ -101,6 +101,91 @@ Resources:
           FromPort: 3389
           ToPort: 3389
           CidrIp: !Ref "SSHLocation"
+      UserData:
+        Fn::Base64: !Sub |
+          <powershell>
+          function Execute-CommandString{
+              [cmdletbinding()]
+              param(
+                  [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)]
+                  [string[]]$command,
+                  [switch]
+                  $ignoreExitCode
+              )
+              process{
+                  foreach($cmdToExec in $command){
+                      'Executing command [{0}]' -f $cmdToExec | Write-Verbose
+                      cmd.exe /D /C $cmdToExec
+
+                      if(-not $ignoreExitCode -and ($LASTEXITCODE -ne 0)){
+                          $msg = ('The command [{0}] exited with code [{1}]' -f $cmdToExec, $LASTEXITCODE)
+                          throw $msg
+                      }
+                  }
+              }
+          }
+
+          function Expand-ZIPFile($File, $Destination){
+              $shell = new-object -com shell.application
+              $zip = $shell.NameSpace($File)
+              foreach($item in $zip.items()){
+                  $shell.Namespace($Destination).copyhere($item)
+              }
+          }
+
+
+          function Download_and_Extract_FromS3 {
+              [cmdletbinding()]
+              Param (
+                  [Parameter(Mandatory=$true)]
+                  [string[]]$Keys,
+                  [Parameter(Mandatory=$true)]
+                  [ValidateScript({ $( Get-S3Bucket -BucketName $_ ) })]
+                  [string]$BucketName
+              )
+              $LocalPath = "C:\S3\"
+              $LocalPathExtract="C:\S3\Output"
+              If (Test-Path -Path $LocalPath) {
+                  Remove-Item $LocalPath -Force 
+              }
+              New-Item -ItemType Directory -Force -Path $LocalPath
+              New-Item -ItemType Directory -Force -Path $LocalPathExtract
+
+              foreach ($Key in $Keys) {
+                  Copy-S3Object -BucketName $BucketName -Key $Key -LocalFolder $LocalPath
+              }
+
+              # Copy-S3Object -BucketName $bucket -Key $Key -LocalFolder $LocalPath
+              # $FilePath = Get-ChildItem -Path $LocalPath -Recurse *.zip | Select-Object FullName
+              # $FilePathName = $FilePath.FullName
+              # Expand-ZIPFile –File $FilePathName –Destination $LocalPathExtract
+          }
+
+          function Deploy {
+              [cmdletbinding()]
+              Param (
+                  [Parameter(Mandatory=$true)]
+                  [string]$Package,
+                  [Parameter(Mandatory=$true)]
+                  [string]$SiteName
+              )
+              $msdeployExe = 'C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe'
+              $publishArgs = @()
+              $publishArgs += '-verb:sync'
+              $publishArgs += ('-source:package=''{0}''' -f "$Package")
+              $publishArgs += '-dest:auto'
+              $publishArgs += ('-setParam:name="IIS Web Application Name",value="{0}"' -f "$SiteName")
+              'Calling msdeploy with the command: [{0} {1}]' -f $msdeployExe,($publishArgs -join ' ') | Write-Output
+              $command = '"{0}" {1}' -f $msdeployExe,($publishArgs -join ' ')
+              Execute-CommandString -command $command
+          }
+
+
+          Download_and_Extract_FromS3 -BucketName xxx -Keys a,b,c
+          Deploy -Package "C:\S3\" -SiteName ""
+          </powershell>
+          <persist>true</persist>
+
   WebInstance:
     Type: AWS::EC2::Instance
     Properties:
