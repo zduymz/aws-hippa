@@ -181,8 +181,10 @@ Resources:
           }
 
 
-          Download_and_Extract_FromS3 -BucketName xxx -Keys a,b,c
-          Deploy -Package "C:\S3\" -SiteName ""
+          Download_and_Extract_FromS3 -BucketName spd-analytics-builds -Keys HCS.Web.API.zip,HCS.Web.App.zip,R2.Web.Services.zip
+          Deploy -Package "C:\S3\HCS.Web.App.zip" -SiteName "HCS.WebUI"
+          Deploy -Package "C:\S3\HCS.Web.API.zip" -SiteName "HCS.API\API"
+          Deploy -Package "C:\S3\R2.Web.Services.zip" -SiteName "HCS.API\Services"
           </powershell>
           <persist>true</persist>
 
