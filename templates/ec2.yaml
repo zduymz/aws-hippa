@@ -101,6 +101,19 @@ Resources:
           FromPort: 3389
           ToPort: 3389
           CidrIp: !Ref "SSHLocation"
+
+  WebInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref "WebInstanceType"
+      SecurityGroups: [!Ref "WebInstanceSecurityGroup"]
+      KeyName: !Ref "KeyName"
+      ImageId: !Ref "WebAmiId"
+      SubnetId: { "Fn::ImportValue": !Sub "${ProdVPC}-CoreSubnet1" }
+      IamInstanceProfile: !Ref ManagedInstanceProfile
+      Tags:
+        - Key: Name
+          Value: !Sub "${Prefix}spdweb01"
       UserData:
         Fn::Base64: !Sub |
           <powershell>
@@ -188,18 +201,6 @@ Resources:
           </powershell>
           <persist>true</persist>
 
-  WebInstance:
-    Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: !Ref "WebInstanceType"
-      SecurityGroups: [!Ref "WebInstanceSecurityGroup"]
-      KeyName: !Ref "KeyName"
-      ImageId: !Ref "WebAmiId"
-      SubnetId: { "Fn::ImportValue": !Sub "${ProdVPC}-CoreSubnet1" }
-      IamInstanceProfile: !Ref ManagedInstanceProfile
-      Tags:
-        - Key: Name
-          Value: !Sub "${Prefix}spdweb01"
   WebInstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
