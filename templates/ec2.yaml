@@ -203,7 +203,7 @@ Resources:
     Properties:
       GroupName: !Sub "${Prefix}-ehs-web-sg"
       GroupDescription: Enable SSH access via port 22
-      VpcId: { "Fn::ImportValue": !Sub "${ProdVPC}-Id" }
+      VpcId: { "Fn::ImportValue": !Sub "${ProdVPC}-VPC" }
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 3389
