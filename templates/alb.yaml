@@ -99,7 +99,7 @@ Resources:
           Value: "true"
         - Key: "access_logs.s3.enabled"
           Value: "false"
-      Scheme: "internet-facing"
+      Scheme: "internal"
       SecurityGroups:
         - !Ref SecurityGroup
       Subnets:
