@@ -164,6 +164,9 @@ Outputs:
         'Fn::Sub': '${AWS::StackName}-CoreSubnet2'
   ProductionVPC:
     Value: !Ref ProductionVPC
+    Export:
+      Name:
+        'Fn::Sub': '${AWS::StackName}-VPC'
   ProductionPrivateRouteTable1:
     Value: !Ref ProductionPrivateRouteTable1
   Help:

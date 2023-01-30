@@ -25,7 +25,7 @@ Resources:
     Properties:
       GroupName: !Sub "${Prefix}-spd-ehs-elb-sg"
       GroupDescription: Enable SSH access via port 22
-      VpcId: { "Fn::ImportValue": !Sub "${VpcModule}VPC" }
+      VpcId: { "Fn::ImportValue": !Sub "${VpcModule}-VPC" }
   SecurityGroupIngressHTTP:
     Type: 'AWS::EC2::SecurityGroupIngress'
     Properties:
@@ -54,7 +54,7 @@ Resources:
       Port: 443
       Protocol: HTTPS
       TargetType: ip
-      VpcId: {'Fn::ImportValue': !Sub '${VpcModule}VPC'}
+      VpcId: {'Fn::ImportValue': !Sub '${VpcModule}-VPC'}
   TargetGroup2:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
@@ -67,7 +67,7 @@ Resources:
       Port: 8443
       Protocol: HTTPS
       TargetType: ip
-      VpcId: {'Fn::ImportValue': !Sub '${VpcModule}VPC'}
+      VpcId: {'Fn::ImportValue': !Sub '${VpcModule}-VPC'}
   Listener1:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
     Properties:
@@ -103,8 +103,8 @@ Resources:
       SecurityGroups:
         - !Ref SecurityGroup
       Subnets:
-        - { "Fn::ImportValue": !Sub "${VpcModule}CoreSubnet1" }
-        - { "Fn::ImportValue": !Sub "${VpcModule}CoreSubnet2" }
+        - { "Fn::ImportValue": !Sub "${VpcModule}-CoreSubnet1" }
+        - { "Fn::ImportValue": !Sub "${VpcModule}-CoreSubnet2" }
       Type: application
 Outputs:
   Arn:
