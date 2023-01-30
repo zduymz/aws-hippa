@@ -47,7 +47,7 @@ Resources:
     Properties:
       Name: !Sub "${Prefix}-spd-ehs-web"
       HealthCheckIntervalSeconds: 30
-      HealthCheckProtocol: TCP
+      HealthCheckProtocol: HTTPS
       HealthCheckTimeoutSeconds: 10 
       HealthyThresholdCount: 2
       UnhealthyThresholdCount: 2
@@ -60,7 +60,7 @@ Resources:
     Properties:
       Name: !Sub "${Prefix}-spd-ehs-api"
       HealthCheckIntervalSeconds: 30
-      HealthCheckProtocol: TCP
+      HealthCheckProtocol: HTTPS
       HealthCheckTimeoutSeconds: 10 
       HealthyThresholdCount: 2
       UnhealthyThresholdCount: 2
