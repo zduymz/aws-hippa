@@ -29,7 +29,7 @@ Parameters:
   WebInstanceType:
     Description: WebServer EC2 instance type
     Type: String
-    Default: t3.small
+    Default: t3.xlarge
     ConstraintDescription: must be a valid EC2 instance type.
   SftpInstanceType:
     Description: WebServer EC2 instance type
@@ -46,10 +46,13 @@ Parameters:
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
   BastionAmiId:
     Type: String
+    Default: ami-06279638588b9d877
   WebAmiId:
     Type: String
+    Default: ami-057d9271df8f35ee7
   SftpAmiId:
     Type: String
+    Default: ami-049943884bd784e0e
 Resources:
   ManagedInstanceRole:
     Type: AWS::IAM::Role
