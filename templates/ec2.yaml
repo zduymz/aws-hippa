@@ -79,7 +79,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref "BastionInstanceType"
-      SecurityGroups: [!Ref "BastionInstanceSecurityGroup"]
+      SecurityGroupIds: [!Ref "BastionInstanceSecurityGroup"]
       KeyName: !Ref "KeyName"
       ImageId: !Ref "BastionAmiId"
       SubnetId: { "Fn::ImportValue": !Sub "${MgmtVPC}-CoreSubnet1" }
@@ -106,7 +106,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref "WebInstanceType"
-      SecurityGroups: [!Ref "WebInstanceSecurityGroup"]
+      SecurityGroupIds: [!Ref "WebInstanceSecurityGroup"]
       KeyName: !Ref "KeyName"
       ImageId: !Ref "WebAmiId"
       SubnetId: { "Fn::ImportValue": !Sub "${ProdVPC}-CoreSubnet1" }
@@ -236,7 +236,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref "SftpInstanceType"
-      SecurityGroups: [!Ref "SftpInstanceSecurityGroup"]
+      SecurityGroupIds: [!Ref "SftpInstanceSecurityGroup"]
       KeyName: !Ref "KeyName"
       ImageId: !Ref "SftpAmiId"
       SubnetId: { "Fn::ImportValue": !Sub "${MgmtVPC}-CoreSubnet1" }
