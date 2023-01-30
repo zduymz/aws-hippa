@@ -85,7 +85,7 @@ Resources:
       SecurityGroupIds: [!Ref "BastionInstanceSecurityGroup"]
       KeyName: !Ref "KeyName"
       ImageId: !Ref "BastionAmiId"
-      SubnetId: { "Fn::ImportValue": !Sub "${MgmtVPC}-CoreSubnet1" }
+      SubnetId: { "Fn::ImportValue": !Sub "${MgmtVPC}-DMZSubnet1" }
       Tags:
         - Key: Name
           Value: !Sub "${Prefix}spdbast01"
@@ -242,7 +242,7 @@ Resources:
       SecurityGroupIds: [!Ref "SftpInstanceSecurityGroup"]
       KeyName: !Ref "KeyName"
       ImageId: !Ref "SftpAmiId"
-      SubnetId: { "Fn::ImportValue": !Sub "${MgmtVPC}-CoreSubnet1" }
+      SubnetId: { "Fn::ImportValue": !Sub "${MgmtVPC}-DMZSubnet1" }
       Tags:
         - Key: Name
           Value: !Sub "${Prefix}spdsftp01"

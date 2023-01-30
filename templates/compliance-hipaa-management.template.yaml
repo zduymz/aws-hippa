@@ -315,6 +315,16 @@ Outputs:
     Export:
       Name:
         'Fn::Sub': '${AWS::StackName}-CoreSubnet2'
+  ManagementDMZSubnet1:
+    Value: !Ref ManagementDMZSubnet1
+    Export:
+      Name:
+        'Fn::Sub': '${AWS::StackName}-DMZSubnet1'
+  ManagementDMZSubnet2:
+    Value: !Ref ManagementDMZSubnet2
+    Export:
+      Name:
+        'Fn::Sub': '${AWS::StackName}-DMZSubnet2'
   ManagementVPC:
     Value: !Ref ManagementVPC
     Export:
