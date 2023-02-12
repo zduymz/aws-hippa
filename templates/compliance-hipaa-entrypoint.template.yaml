@@ -332,6 +332,64 @@ Resources:
           Fn::GetAtt: 
           - MgmtStack
           - Outputs.ManagementPublicRouteTable2
+
+  AlbStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: 
+        !Sub 
+          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/alb.yaml'
+          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+            QSS3KeyPrefix: !Ref QSS3KeyPrefix
+      TimeoutInMinutes: 60
+      Parameters:
+        Prefix: "abc"
+        ProductionVPC:
+          Fn::GetAtt: 
+          - ProdStack
+          - Outputs.ProductionVPC
+        ProductionCoreSubnet1:
+          Fn::GetAtt: 
+          - ProdStack
+          - Outputs.ProductionCoreSubnet1
+        ProductionCoreSubnet2:
+          Fn::GetAtt: 
+          - ProdStack
+          - Outputs.ProductionCoreSubnet2
+  EC2Stack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: 
+        !Sub 
+          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ec2.yaml'
+          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+            QSS3KeyPrefix: !Ref QSS3KeyPrefix
+      TimeoutInMinutes: 60
+      Parameters:
+        Prefix: "abc"
+        KeyName: ""
+        ManagementVPC:
+          Fn::GetAtt: 
+          - MgmtStack
+          - Outputs.ManagementVPC
+        ManagementDMZSubnet1:
+          Fn::GetAtt: 
+          - MgmtStack
+          - Outputs.ManagementDMZSubnet1
+        ProductionVPC:
+          Fn::GetAtt: 
+          - ProdStack
+          - Outputs.ProductionVPC
+        ProductionCoreSubnet1:
+          Fn::GetAtt: 
+          - ProdStack
+          - Outputs.ProductionCoreSubnet1
+        ProductionCoreSubnet2:
+          Fn::GetAtt: 
+          - ProdStack
+          - Outputs.ProductionCoreSubnet2
 Outputs:
   TemplateType:
     Value: HIPAA Compliance

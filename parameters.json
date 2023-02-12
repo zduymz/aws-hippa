@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "AWSConfigARN",
+    "ParameterValue": "arn://bca"
+  },
+  {
+    "ParameterKey": "ProdVPCCIDRBlock",
+    "ParameterValue": "10.100.0.0/16"
+  },
+  {
+    "ParameterKey": "ProdVPCSubnet1",
+    "ParameterValue": "10.100.0.0/17"
+  },
+  {
+    "ParameterKey": "ProdVPCSubnet2",
+    "ParameterValue": "10.100.128.0/17"
+  },
+  {
+    "ParameterKey": "MgmtVPCCIDRBlock",
+    "ParameterValue": "10.1.0.0/16"
+  },
+  {
+    "ParameterKey": "MgmtVPCPublicSubnet1",
+    "ParameterValue": "10.1.0.0/18"
+  },
+  {
+    "ParameterKey": "MgmtVPCPublicSubnet2",
+    "ParameterValue": "10.1.64.0/18"
+  },
+  {
+    "ParameterKey": "MgmtVPCPrivateSubnet1",
+    "ParameterValue": "10.1.128.0/18"
+  },
+  {
+    "ParameterKey": "MgmtVPCPrivateSubnet2",
+    "ParameterValue": "10.1.192.0/18"
+  }
+]

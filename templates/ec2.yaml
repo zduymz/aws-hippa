@@ -11,12 +11,21 @@ Parameters:
   Prefix:
     Description: ""
     Type: String
-  MgmtVPC:
-    Description: "Stack name of Management VPC module."
+  ManagementVPC:
     Type: String
-  ProdVPC:
-    Description: "Stack name of Production VPC module."
+    Description: Management VPC.
+  ManagementDMZSubnet1:
     Type: String
+    Description: Management VPC DMZ subnet 1.
+  ProductionVPC:
+    Type: String
+    Description: Production VPC.
+  ProductionCoreSubnet1:
+    Type: String
+    Description: Production VPC private subnet 1.
+  ProductionCoreSubnet2:
+    Type: String
+    Description: Production VPC private subnet 2.
   KeyName:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
     Type: AWS::EC2::KeyPair::KeyName
@@ -85,7 +94,7 @@ Resources:
       SecurityGroupIds: [!Ref "BastionInstanceSecurityGroup"]
       KeyName: !Ref "KeyName"
       ImageId: !Ref "BastionAmiId"
-      SubnetId: { "Fn::ImportValue": !Sub "${MgmtVPC}-DMZSubnet1" }
+      SubnetId: !Ref ManagementDMZSubnet1
       Tags:
         - Key: Name
           Value: !Sub "${Prefix}spdbast01"
@@ -94,7 +103,7 @@ Resources:
     Properties:
       GroupName: !Sub "${Prefix}-ehs-bastion-sg"
       GroupDescription: Enable SSH access via port 22
-      VpcId: { "Fn::ImportValue": !Sub "${MgmtVPC}-Id" }
+      VpcId: !Ref ManagementVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
@@ -112,7 +121,7 @@ Resources:
       SecurityGroupIds: [!Ref "WebInstanceSecurityGroup"]
       KeyName: !Ref "KeyName"
       ImageId: !Ref "WebAmiId"
-      SubnetId: { "Fn::ImportValue": !Sub "${ProdVPC}-CoreSubnet1" }
+      SubnetId: !Ref ProductionCoreSubnet1
       IamInstanceProfile: !Ref ManagedInstanceProfile
       Tags:
         - Key: Name
@@ -209,7 +218,7 @@ Resources:
     Properties:
       GroupName: !Sub "${Prefix}-ehs-web-sg"
       GroupDescription: Enable SSH access via port 22
-      VpcId: { "Fn::ImportValue": !Sub "${ProdVPC}-VPC" }
+      VpcId: !Ref ProductionVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 3389
@@ -242,7 +251,7 @@ Resources:
       SecurityGroupIds: [!Ref "SftpInstanceSecurityGroup"]
       KeyName: !Ref "KeyName"
       ImageId: !Ref "SftpAmiId"
-      SubnetId: { "Fn::ImportValue": !Sub "${MgmtVPC}-DMZSubnet1" }
+      SubnetId: !Ref ManagementDMZSubnet1
       Tags:
         - Key: Name
           Value: !Sub "${Prefix}spdsftp01"
@@ -251,7 +260,7 @@ Resources:
     Properties:
       GroupName: !Sub "${Prefix}-ehs-sftp-sg"
       GroupDescription: Enable SSH access via port 22
-      VpcId: { "Fn::ImportValue": !Sub "${MgmtVPC}-Id" }
+      VpcId: !Ref ManagementVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
