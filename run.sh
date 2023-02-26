@@ -36,7 +36,7 @@ STACK_ID=$( \
   aws cloudformation create-stack \
   --stack-name ${STACK_NAME} \
   --template-url "https://cft-hipaa-automation-us-east-1.s3.amazonaws.com/quickstart-compliance-hipaa/templates/compliance-hipaa-secondentrypoint.template.yaml" \
-  --capabilities CAPABILITY_IAM \
+  --capabilities CAPABILITY_IAM,CAPABILITY_NAMED_IAM \
   --parameters file://${DIR}/parameters.json 
   | jq -r .StackId \
 )
