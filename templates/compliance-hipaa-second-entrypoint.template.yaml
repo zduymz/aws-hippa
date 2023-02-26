@@ -163,12 +163,12 @@ Parameters:
     Description: Number of days that the flow-log log group is retained for the management VPC.
   CreateConfigRecorder:
     Type: String
-    Default: 'Yes'
+    Default: 'No'
     AllowedValues: [ 'Yes', 'No', 'AutoDetect' ]
     Description: Choose "No" if you've already used AWS Config in this Region.
   CreateConfigDeliveryChannel:
     Type: String
-    Default: 'Yes'
+    Default: 'No'
     AllowedValues: [ 'Yes', 'No', 'AutoDetect' ]
     Description: Choose "No" if you've already used AWS Config in this Region.
   QSS3BucketName:
@@ -209,42 +209,9 @@ Parameters:
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 Resources:
-  ConfigStack:
-    Type: 'AWS::CloudFormation::Stack'
-    Properties:
-      TemplateURL: 
-        !Sub 
-          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/compliance-hipaa-config.template.yaml'
-          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
-            QSS3KeyPrefix: !Ref QSS3KeyPrefix
-      TimeoutInMinutes: 60
-      Parameters:
-        AWSConfigARN: !Ref AWSConfigARN
-        CreateConfigRecorder: !Ref CreateConfigRecorder
-        CreateConfigDeliveryChannel: !Ref CreateConfigDeliveryChannel
-        QSS3BucketName: !Ref QSS3BucketName
-        QSS3KeyPrefix: !Ref QSS3KeyPrefix
-  LogStack:
-    Type: 'AWS::CloudFormation::Stack'
-    DependsOn: ConfigStack
-    Properties:
-      TemplateURL: 
-        !Sub 
-          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/compliance-hipaa-logging.template.yaml'
-          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
-            QSS3KeyPrefix: !Ref QSS3KeyPrefix
-      TimeoutInMinutes: 60
-      Parameters:
-        SNSAlarmEmail: !Ref SNSAlarmEmail
-        LifecycleExpirationDays: !Ref LifecycleExpirationDays
-        LifecycleTransitionStandardIADays: !Ref LifecycleTransitionStandardIADays
-        LifecycleTransitionGlacierDays: !Ref LifecycleTransitionGlacierDays
-        CloudTrailLogRetentionDays: !Ref CloudTrailLogRetentionDays
   ProdStack:
     Type: 'AWS::CloudFormation::Stack'
-    DependsOn: [ ConfigStack, LogStack, MgmtStack ]
+    DependsOn: [MgmtStack ]
     Properties:
       TemplateURL: 
         !Sub 
@@ -260,7 +227,6 @@ Resources:
         ProdVPCFlowLogLogGroupRetention: !Ref ProdVPCFlowLogLogGroupRetention
   MgmtStack:
     Type: 'AWS::CloudFormation::Stack'
-    DependsOn: [ ConfigStack, LogStack ]
     Properties:
       TemplateURL: 
         !Sub 

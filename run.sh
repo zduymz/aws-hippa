@@ -35,13 +35,13 @@ echo "Creating stack..."
 STACK_ID=$( \
   aws cloudformation create-stack \
   --stack-name ${STACK_NAME} \
-  --template-body file://${DIR}/compliance-hipaa-entrypoint.template.yaml \
+  --template-url "https://cft-hipaa-automation-us-east-1.s3.amazonaws.com/quickstart-compliance-hipaa/templates/compliance-hipaa-secondentrypoint.template.yaml" \
   --capabilities CAPABILITY_IAM \
   --parameters file://${DIR}/parameters.json 
   | jq -r .StackId \
 )
 
 echo "Waiting on ${STACK_ID} create completion..."
-aws cloudformation wait stack-create-complete --stack-name ${STACK_ID}
-aws cloudformation describe-stacks --stack-name ${STACK_ID} | jq .Stacks[0].Outputs
+aws cloudformation wait stack-create-complete --stack-name ${STACK_NAME}
+aws cloudformation describe-stacks --stack-name ${STACK_NAME} | jq .Stacks[0].Outputs
 
