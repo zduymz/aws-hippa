@@ -163,12 +163,12 @@ Parameters:
     Description: Number of days that the flow-log log group is retained for the management VPC.
   CreateConfigRecorder:
     Type: String
-    Default: 'Yes'
+    Default: 'No'
     AllowedValues: [ 'Yes', 'No', 'AutoDetect' ]
     Description: Choose "No" if you've already used AWS Config in this Region.
   CreateConfigDeliveryChannel:
     Type: String
-    Default: 'Yes'
+    Default: 'No'
     AllowedValues: [ 'Yes', 'No', 'AutoDetect' ]
     Description: Choose "No" if you've already used AWS Config in this Region.
   QSS3BucketName:

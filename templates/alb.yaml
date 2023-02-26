@@ -16,7 +16,7 @@ Parameters:
   CertificateArn:
     Description: 'Optional Amazon Resource Name (ARN) of the certificate to associate with the listener.'
     Type: String
-    Default: ''
+    Default: 'arn:aws:acm:us-east-1:421987627244:certificate/fbb3be7c-0241-4df1-8950-36afcfc6e6d9'
   IdleTimeoutInSeconds:
     Description: "The idle timeout value, in seconds."
     Type: Number
