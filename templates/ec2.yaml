@@ -66,7 +66,9 @@ Resources:
   ManagedInstanceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: ec2-bootstrap-role
+      RoleName: !Sub
+        - '${Prefix}-ec2-bootstrap-role'
+        - Prefix: !Ref Prefix
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -86,7 +88,9 @@ Resources:
       Path: "/"
       Roles:
       - !Ref ManagedInstanceRole
-      InstanceProfileName: ec2-bootstrap-profile
+      InstanceProfileName: !Sub
+        - '${Prefix}-ec2-bootstrap-profile'
+        - Prefix: !Ref Prefix
   BastionInstance:
     Type: AWS::EC2::Instance
     Properties:
