@@ -32,6 +32,9 @@ Metadata:
       MgmtVPCFlowLogLogGroupRetention:
         default: Management VPC log group retention days
 Parameters:
+  Prefix:
+    Description: ""
+    Type: String
   MgmtVPCCIDRBlock:
     Type: String
     Description: Management VPC CIDR block.
@@ -96,7 +99,9 @@ Resources:
       EnableDnsSupport: true
       Tags:
         - Key: Name
-          Value: Management VPC
+          Value: !Sub
+          - '${Prefix}-management-vpc'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
     DependsOn:
@@ -114,7 +119,9 @@ Resources:
       LogGroupName: !Ref ManagementVPCFlowLogGroup
       Tags:
         - Key: Name
-          Value: Management VPC Flow Logs
+          Value: !Sub
+          - '${Prefix}-management-vpc-flow-logs'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ManagementDMZSubnet1:
@@ -126,7 +133,9 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: Management DMZ Subnet 1
+          Value: !Sub
+          - '${Prefix}-management-dmz-subnet-1'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ManagementDMZSubnet2:
@@ -138,7 +147,9 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: Management DMZ Subnet 2
+          Value: !Sub
+          - '${Prefix}-management-dmz-subnet-2'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ManagementCoreSubnet1:
@@ -150,7 +161,9 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: Management Core Subnet 1
+          Value: !Sub
+          - '${Prefix}-management-core-subnet-1'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ManagementCoreSubnet2:
@@ -162,7 +175,9 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: Management Core Subnet 2
+          Value: !Sub
+          - '${Prefix}-management-core-subnet-2'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ManagementPublicRouteTable1:
@@ -171,7 +186,9 @@ Resources:
       VpcId: !Ref ManagementVPC
       Tags:
         - Key: Name
-          Value: Management VPC Public Route Table 1
+          Value: !Sub
+          - '${Prefix}-management-vpc-public-rbt-1'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ManagementPrivateRouteTable1:
@@ -180,7 +197,9 @@ Resources:
       VpcId: !Ref ManagementVPC
       Tags:
         - Key: Name
-          Value: Management VPC Private Route Table 1
+          Value: !Sub
+          - '${Prefix}-management-vpc-private-rbt-1'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ManagementPublicRouteTable2:
@@ -189,7 +208,9 @@ Resources:
       VpcId: !Ref ManagementVPC
       Tags:
         - Key: Name
-          Value: Management VPC Public Route Table 2
+          Value: !Sub
+          - '${Prefix}-management-vpc-public-rbt-2'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ManagementPrivateRouteTable2:
@@ -198,7 +219,9 @@ Resources:
       VpcId: !Ref ManagementVPC
       Tags:
         - Key: Name
-          Value: Management VPC Private Route Table 2
+          Value: !Sub
+          - '${Prefix}-management-vpc-private-rbt-2'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ManagementDMZ1RouteAssociation:
@@ -240,7 +263,9 @@ Resources:
       Domain: !Ref ManagementVPC
       Tags:
         - Key: Name
-          Value: Management EIP for NAT Gateway 1
+          Value: !Sub
+          - '${Prefix}-management-eip-nat-gw-1'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
     DependsOn:
@@ -251,7 +276,9 @@ Resources:
       Domain: !Ref ManagementVPC
       Tags:
         - Key: Name
-          Value: Management EIP for NAT Gateway 2
+          Value: !Sub
+          - '${Prefix}-management-eip-nat-gw-2'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
     DependsOn:
@@ -265,7 +292,9 @@ Resources:
       SubnetId: !Ref ManagementDMZSubnet1
       Tags:
         - Key: Name
-          Value: Management NAT Gateway 1
+          Value: !Sub
+          - '${Prefix}-management-nat-gw-1'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ManagementNATGateway2:
@@ -277,7 +306,9 @@ Resources:
       SubnetId: !Ref ManagementDMZSubnet2
       Tags:
         - Key: Name
-          Value: Management NAT Gateway 2
+          Value: !Sub
+          - '${Prefix}-management-nat-gw-2'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ManagementIGWDefaultRoute1:

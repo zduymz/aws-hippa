@@ -53,6 +53,9 @@ Metadata:
       ManagementPublicRouteTable2:
         default: Management VPC public route table 2
 Parameters:
+  Prefix:
+    Description: ""
+    Type: String
   ProductionVPC:
     Type: String
     Description: Production VPC.
@@ -101,7 +104,9 @@ Resources:
       DnsSupport: enable
       Tags:
         - Key: Name
-          Value: HIPAA Transit Gateway
+          Value: !Sub
+          - '${Prefix}-hipaa-transit-gw'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
       VpnEcmpSupport: enable
@@ -115,7 +120,9 @@ Resources:
       VpcId: !Ref ManagementVPC
       Tags:
         - Key: Name
-          Value: Management Transit Gateway Attachment
+          Value: !Sub
+          - '${Prefix}-management-transit-gw-attach'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ProductionVPCtoTransitGateway:
@@ -128,7 +135,9 @@ Resources:
       VpcId: !Ref ProductionVPC
       Tags:
         - Key: Name
-          Value: Production Transit Gateway Attachment
+          Value: !Sub
+          - '${Prefix}-production-transit-gw-attach'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   TransitGatewayExternalRouteTable:

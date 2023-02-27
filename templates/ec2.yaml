@@ -101,7 +101,7 @@ Resources:
       SubnetId: !Ref ManagementDMZSubnet1
       Tags:
         - Key: Name
-          Value: !Sub "${Prefix}spdbast01"
+          Value: !Sub "${Prefix}-spdbast01"
   BastionInstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -129,7 +129,7 @@ Resources:
       IamInstanceProfile: !Ref ManagedInstanceProfile
       Tags:
         - Key: Name
-          Value: !Sub "${Prefix}spdweb01"
+          Value: !Sub "${Prefix}-spdweb01"
       UserData:
         Fn::Base64: !Sub |
           <powershell>
@@ -258,7 +258,7 @@ Resources:
       SubnetId: !Ref ManagementDMZSubnet1
       Tags:
         - Key: Name
-          Value: !Sub "${Prefix}spdsftp01"
+          Value: !Sub "${Prefix}-spdsftp01"
   SftpInstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:

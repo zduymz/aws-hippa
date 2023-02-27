@@ -97,6 +97,9 @@ Metadata:
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
 Parameters:
+  Prefix:
+    Type: String
+    Description: ''
   AWSConfigARN:
     Type: String
     Default: ''
@@ -221,6 +224,7 @@ Resources:
             QSS3KeyPrefix: !Ref QSS3KeyPrefix
       TimeoutInMinutes: 60
       Parameters:
+        Prefix: !Ref Prefix
         ProdVPCCIDRBlock: !Ref ProdVPCCIDRBlock
         ProdVPCSubnet1: !Ref ProdVPCSubnet1
         ProdVPCSubnet2: !Ref ProdVPCSubnet2
@@ -236,6 +240,7 @@ Resources:
             QSS3KeyPrefix: !Ref QSS3KeyPrefix
       TimeoutInMinutes: 60
       Parameters:
+        Prefix: !Ref Prefix
         MgmtVPCCIDRBlock: !Ref MgmtVPCCIDRBlock
         MgmtVPCPublicSubnet1: !Ref MgmtVPCPublicSubnet1
         MgmtVPCPublicSubnet2: !Ref MgmtVPCPublicSubnet2
@@ -253,6 +258,7 @@ Resources:
             QSS3KeyPrefix: !Ref QSS3KeyPrefix
       TimeoutInMinutes: 60
       Parameters:
+        Prefix: !Ref Prefix
         ProdVPCCIDRBlock: !Ref ProdVPCCIDRBlock
         ProductionVPC:
           Fn::GetAtt: 
@@ -310,7 +316,7 @@ Resources:
             QSS3KeyPrefix: !Ref QSS3KeyPrefix
       TimeoutInMinutes: 60
       Parameters:
-        Prefix: "abc"
+        Prefix: !Ref Prefix
         ProductionVPC:
           Fn::GetAtt: 
           - ProdStack
@@ -334,7 +340,7 @@ Resources:
             QSS3KeyPrefix: !Ref QSS3KeyPrefix
       TimeoutInMinutes: 60
       Parameters:
-        Prefix: "abc"
+        Prefix: !Ref Prefix
         KeyName: "spd-aws-admin"
         ManagementVPC:
           Fn::GetAtt: 

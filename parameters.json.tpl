@@ -1,5 +1,9 @@
 [
   {{
+    "ParameterKey": "Prefix",
+    "ParameterValue": "{PREFIX}"
+  }},
+  {{
     "ParameterKey": "AWSConfigARN",
     "ParameterValue": "{AWS_CONFIG_ARN}"
   }},

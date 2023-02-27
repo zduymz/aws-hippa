@@ -89,7 +89,8 @@ def subetter(input_cidr, parts, env):
 values = {
     "MGMT_CIDR": sys.argv[1],
     "PROD_CIDR": sys.argv[2],
-    "AWS_CONFIG_ARN": sys.argv[3]
+    "AWS_CONFIG_ARN": sys.argv[3],
+    "PREFIX": sys.argv[4]
 }
 
 # test if not valid CIDR block

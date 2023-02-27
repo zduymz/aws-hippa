@@ -26,6 +26,9 @@ Metadata:
       ProdVPCFlowLogLogGroupRetention:
         default: Production VPC log group retention days
 Parameters:
+  Prefix:
+    Description: ""
+    Type: String
   ProdVPCCIDRBlock:
     Type: String
     Description: Production VPC CIDR block.
@@ -87,7 +90,9 @@ Resources:
       EnableDnsSupport: true
       Tags:
         - Key: Name
-          Value: Production VPC
+          Value: !Sub
+          - '${Prefix}-production-vpc'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
     DependsOn:
@@ -105,7 +110,9 @@ Resources:
       LogGroupName: !Ref ProductionVPCFlowLogGroup
       Tags:
         - Key: Name
-          Value: Production VPC Flow Logs
+          Value: !Sub
+          - '${Prefix}-production-vpc-flow-logs'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ProductionCoreSubnet1:
@@ -117,7 +124,9 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: Production Core Subnet 1
+          Value: !Sub
+          - '${Prefix}-production-core-subnet-1'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ProductionCoreSubnet2:
@@ -129,7 +138,9 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: Production Core Subnet 2
+          Value: !Sub
+          - '${Prefix}-production-core-subnet-2'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ProductionPrivateRouteTable1:
@@ -138,7 +149,9 @@ Resources:
       VpcId: !Ref ProductionVPC
       Tags:
         - Key: Name
-          Value: Production VPC Private Route Table 1
+          Value: !Sub
+          - '${Prefix}-production-vpc-private-rbt-1'
+          - Prefix: !Ref Prefix
         - Key: Purpose
           Value: Networking
   ProductionCore1RouteAssociation:
