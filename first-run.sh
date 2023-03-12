@@ -2,7 +2,7 @@
 
 
 usage() {
-  echo "Usage: run.sh <stack_name> <management_vpc_cidr> <production_vpc_cdir> <aws_config_arn> <prefix>"
+  echo "Usage: run.sh <stack_name> <management_vpc_cidr> <production_vpc_cdir> <aws_config_arn>"
 }
 
 if [ -z "$1" ]; then
@@ -29,16 +29,16 @@ if [ -z "$4" ]; then
     exit 1
 fi
 
-if [ -z "$5" ]; then
-    echo "Miss Prefix"
-    usage
-    exit 1
-fi
+# if [ -z "$5" ]; then
+#     echo "Miss Prefix"
+#     usage
+#     exit 1
+# fi
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 STACK_NAME="$1"
-python3 subnet-divider.py $2 $3 $4 $5
+python3 subnet-divider.py $2 $3 $4 "arn:aws:iam::421987627244:role/aws-service-role/config.amazonaws.com/AWSServiceRoleForConfig"
 
 if [ $? -ne 0 ]; then
   exit 1
