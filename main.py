@@ -9,7 +9,6 @@ class SafeDict(dict):
     def __missing__(self, key):
         return '{' + key + '}'
 
-
 def power_log(x):
     """ Get smallest power of 2 greater than (or equal to) a given x. """
     return 2**(math.ceil(math.log(x, 2)))
@@ -86,20 +85,54 @@ def subetter(input_cidr, parts, env):
         # print(("Host Range: "), ".".join(mcap(str, hosts["first"])), "-", ".".join(map(str, hosts["last"])))
         # print(("Host Count: "), hosts["count"])
 
+
+if len(sys.argv) != 5 {
+    print('main.py <stack_name> <management_vpc_cidr> <production_vpc_cdir> <prefix>')
+}
+
+stack_name = sys.argv[1]
+stack_url = "https://cft-hipaa-automation-us-east-1.s3.amazonaws.com/quickstart-compliance-hipaa/templates/compliance-hipaa-second-entrypoint.template.yaml"
 values = {
-    "MGMT_CIDR": sys.argv[1],
-    "PROD_CIDR": sys.argv[2],
-    "AWS_CONFIG_ARN": sys.argv[3],
-    "PREFIX": sys.argv[4]
+    "MGMT_CIDR": sys.argv[2],
+    "PROD_CIDR": sys.argv[3],
+    "AWS_CONFIG_ARN": sys.argv[4],
+    "PREFIX": "arn:aws:iam::421987627244:role/aws-service-role/config.amazonaws.com/AWSServiceRoleForConfig"
 }
 
 # test if not valid CIDR block
-ipaddress.ip_network(sys.argv[1])
 ipaddress.ip_network(sys.argv[2])
+ipaddress.ip_network(sys.argv[3])
 
-subetter(sys.argv[1], 4, 'MGMT')
-subetter(sys.argv[2], 2, 'PROD')
+subetter(sys.argv[2], 4, 'MGMT')
+subetter(sys.argv[3], 2, 'PROD')
+
+import boto3
+import botocore
+import json
+
+cf = boto3.client('cloudformation')
+parameters = []
 
 with open('parameters.json.tpl', 'r') as fr, open('parameters.json', 'w') as fw:
     data = fr.read()
-    fw.write(data.format_map(SafeDict(values)))
+    # fw.write(data.format_map(SafeDict(values)))
+    parameters = data.format_map(SafeDict(values))
+
+waiter = cf.get_waiter('stack_update_complete')
+try:
+    response = cf.create_stack(
+        StackName=stack_name,
+        TemplateURL=stack_url,
+        Parameters=parameters,
+        Capabilities=['CAPABILITY_IAM','CAPABILITY_NAMED_IAM'],
+    )
+    print("...waiting for stack to be ready...")
+    waiter.wait(StackName=stack_name)
+except botocore.exceptions.ClientError as ex:
+    error_message = ex.response['Error']['Message']
+    if error_message == 'No updates are to be performed.':
+        print("No changes")
+    else:
+        raise
+else:
+    print("stack create completed")
